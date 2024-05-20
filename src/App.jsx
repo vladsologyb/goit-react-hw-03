@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import ContactForm from './components/contactForm/ContactForm'
+import Contact from './components/contact/Contact'
 import initalContacs from './contacts.json'
 import './App.css'
 
