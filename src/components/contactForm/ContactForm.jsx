@@ -1,53 +1,50 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useId } from 'react';
 import {nanoid} from 'nanoid'
+import css from "./ContactForm.module.css"
 
 const FeedbackSchema = Yup.object().shape({
-    username: Yup.string().min(2, "Too Short!").max(50, "Too Long!").required("Required"),
+    name: Yup.string().min(2, "Too Short!").max(50, "Too Long!").required("Required"),
     number: Yup.number().required("it is required")
-});
+})
 
-
-export default function ContactForm(onAdd) {
+export default function ContactForm({ onAdd }) {
     
-    const initialValues = {
-        username: "",
-        namber: "",
-    };
     const handleSubmit = (value, actions) => {
-
-         onAdd({
+        console.log(value)
+        onAdd({
       id: nanoid(),
             name: value.name,
             number: value.number
       
        
-    })
-   actions.resetForm();
+    });
+        actions.resetForm()
+
+      
     }
 
-     const usernameId = useId();
-    const numberId = useId();
 
 
     return (
         <Formik
-            initialValues={initialValues}
-            onSabmit={handleSubmit}
+            initialValues={{
+                name: "",
+                number: "",
+                id: nanoid()
+            }}
+            onSubmit={handleSubmit}
             validationSchema={FeedbackSchema}
         >
-            <Form>
-                <label htmlFor={usernameId}>Name</label>
-                <Field type="text" name="name" id={usernameId} />
-                <ErrorMessage name="email" component="span" />
-
-                <label htmlFor={numberId}>Namber</label>
-                <Field type="text" name="name" id={numberId} />
-                <ErrorMessage name="email" component="span" />
-
-                <button type="submit">Add contact</button>
-            </Form>
+         <Form className={css.form}>
+            <p className={css.text}>Name</p>
+            <Field name="name" type="text" />
+            <ErrorMessage name="name" component="span" />
+            <p className={css.text}>Number</p>
+            <Field className={css.field} name="number" type="number" />
+            <ErrorMessage name="number" component="span" />
+            <button className={css.btn} type="submit">Add Contacts</button>
+        </Form>
             
         </Formik>
     )

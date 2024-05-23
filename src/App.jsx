@@ -1,43 +1,51 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ContactForm from './components/contactForm/ContactForm'
-import Contact from './components/contact/Contact'
-import initalContacs from './contacts.json'
+import SearchBox from './components/searchBox/SearchBox'
+import ContactsList from './components/contactList/ContactList'
+import initalContacts from './contacts.json'
 import './App.css'
 
 function App() {
   const [contacts, setContacts] = useState(() => {
-    const savedContacts = window.localStorage.getItem('current-contacts')
-    if (savedContacts !== null) {
-      return JSON.parse(savedContacts)
+    const newContact = window.localStorage.getItem("newContact");
+    console.log(newContact)
+   if (newContact !== null) {
+    const parsedContacts = JSON.parse(newContact);
+    if (Array.isArray(parsedContacts)) {
+        return parsedContacts;
+    } else {
+        
+        return [];
     }
-    return initalContacs
-  })
+}
+    return initalContacts;
+})
+ const [filter, setFilter] = useState('')
 
+ 
+  const AddContact = (newContact) => {
+    setContacts((prevContacts) => [...prevContacts, newContact])
+    
+  }
+
+  const DeleteContact = (Id) => {
+    setContacts((prevContacts)=>{
+    return prevContacts.filter((contact)=>contact.id !==Id)
+  })
+  }
    useEffect(() => {
-    localStorage.setItem('current-contact', JSON.stringify(contacts));
-   }, [clicks]);
+    window.localStorage.setItem("newContact", JSON.stringify(contacts));
+
+   }, [contacts]);
   
-   const addContact = (newContact) => {
-    setContacts((prevContacts) => {
-        newContact.id = nanoid()
-        return [...prevContacts, newContact]
-      });
-   };
-  
-  const deleteContact = (id) => {
-    setContacts((prevContacts) => {
-      return prevContacts.filter(contact => contact.id !== id)
-    })
-  };
-  
+  const filteredContacts = contacts.filter((contact)=>contact.name.toLowerCase().includes(filter.toLowerCase()))
+
   return (
     <>
-      <div>
-  <h1>Phonebook</h1>
-  <ContactForm onAdd={addContact} />
-  {/* <SearchBox />
-  <ContactList /> */}
-</div>
+      <h1>Phonebook</h1>
+      <ContactForm onAdd={AddContact}></ContactForm>
+      <SearchBox value={filter} onFilter={setFilter}/>
+      <ContactsList contacts={filteredContacts} onDelete={DeleteContact}></ContactsList>
     </>
   )
 }
